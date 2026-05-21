@@ -10,10 +10,10 @@ Dictionary<string, MakeTask> tasks;
 try
 {
     tasks = await MakeFileParser.Parse("makefile");
-    var resolvedTasks = TaskDependencyResolver.Resolve(tasks, args[0]);
+    var resolvedTasks = TaskDependencySorter.Sort(tasks, args[0]);
     foreach(var task in resolvedTasks)
     {
-        Console.WriteLine(string.Join("\n", tasks[task].Actions));
+        Console.WriteLine(string.Join("\n", task.Actions));
     }
 }
 catch (Exception ex)
@@ -22,5 +22,3 @@ catch (Exception ex)
     return;
 }
 
-
-//Console.WriteLine(string.Join("\n", tasks));

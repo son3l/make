@@ -8,4 +8,16 @@ internal class MakeTask
     {
         return $"Name: {Name}; Depends: {string.Join(", ", Dependencies.Select(dep => dep.Name))}; Actions: {string.Join(", ", Actions)}";
     }
+    public override bool Equals(object? obj)
+    {
+        if (obj is MakeTask other)
+        {
+            return Name == other.Name;
+        }
+        return false;
+    }
+    public override int GetHashCode()
+    {
+        return Name.GetHashCode();
+    }
 }
