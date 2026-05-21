@@ -2,23 +2,26 @@
 
 namespace make.Service
 {
-    internal static class TaskDependencySorter
+    internal static class MakeTaskExtensions
     {
-        public static List<MakeTask> Sort(Dictionary<string, MakeTask> tasks, string taskName)
+        /// <summary>
+        /// Сортирует задачи от последнего предка до необходимой задачи
+        /// </summary>
+        /// <param name="task">задача у которой необходимо отсортировать зависимости</param>
+        /// <returns>отсортированный список задач от самого предка до необходимой задачи</returns>
+        public static List<MakeTask> SortDependencies(this MakeTask task)
         {
-            if (!tasks.ContainsKey(taskName))
-                throw new ArgumentException($"task {taskName} not found");
-            List<MakeTask> resolvedTasks = [];
+            List<MakeTask> sortedTasks = [];
             HashSet<MakeTask> visitedTasks = [];
             Stack<(MakeTask task, bool visited)> stack = new();
-            stack.Push((tasks[taskName], false));
+            stack.Push((task, false));
             while (stack.Count > 0)
             {
                 var (currentTask, visited) = stack.Pop();
                 if (visited)
                 {
                     visitedTasks.Add(currentTask);
-                    resolvedTasks.Add(currentTask);
+                    sortedTasks.Add(currentTask);
                     continue;
                 }
                 if (visitedTasks.Contains(currentTask))
@@ -31,7 +34,7 @@ namespace make.Service
                     stack.Push((dependency, false));
                 }
             }
-            return resolvedTasks;
+            return sortedTasks;
         }
     }
 }

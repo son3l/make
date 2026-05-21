@@ -6,15 +6,10 @@ if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
     Console.WriteLine("no task specified");
     return;
 }
-Dictionary<string, MakeTask> tasks;
+List<MakeTask> tasks;
 try
 {
     tasks = await MakeFileParser.Parse("makefile");
-    var resolvedTasks = TaskDependencySorter.Sort(tasks, args[0]);
-    foreach(var task in resolvedTasks)
-    {
-        Console.WriteLine(string.Join("\n", task.Actions));
-    }
 }
 catch (Exception ex)
 {
@@ -22,3 +17,13 @@ catch (Exception ex)
     return;
 }
 
+var task = tasks.FirstOrDefault(t => t.Name == args[0]);
+if (task is null)
+{
+    Console.WriteLine($"task '{args[0]}' not found");
+    return;
+}
+foreach (var dep in task.SortDependencies())
+{
+    Console.WriteLine(string.Join("\n", dep.Actions));
+}
