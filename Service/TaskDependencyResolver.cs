@@ -7,20 +7,14 @@ namespace make.Service
         public static List<string> Resolve(Dictionary<string, MakeTask> tasks, string taskName)
         {
             if (!tasks.ContainsKey(taskName))
-            {
                 throw new ArgumentException($"task {taskName} not found");
-            }
             List<string> resolvedTasks = [];
             HashSet<string> visitedTasks = [];
-            Stack<(string Task, bool Visited)> stack = new();
+            Stack<(string task, bool visited)> stack = new();
             stack.Push((taskName, false));
             while (stack.Count > 0)
             {
                 var (currentTaskName, visited) = stack.Pop();
-                if (!tasks.ContainsKey(currentTaskName))
-                {
-                    throw new ArgumentException($"task {currentTaskName} not found");
-                }
                 if (visited)
                 {
                     visitedTasks.Add(currentTaskName);
@@ -34,11 +28,7 @@ namespace make.Service
                 stack.Push((currentTaskName, true));
                 foreach (var dependency in tasks[currentTaskName].Dependencies)
                 {
-                    if (!tasks.ContainsKey(dependency))
-                    {
-                        throw new ArgumentException($"task {dependency} not found");
-                    }
-                    stack.Push((dependency, false));
+                    stack.Push((dependency.Name, false));
                 }
             }
             return resolvedTasks;
